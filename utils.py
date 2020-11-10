@@ -14,8 +14,10 @@ import qrcode
 from prettytable import PrettyTable
 from colorama import init, Fore, Back, Style
 
+
 class DrawTable(object):
     '''工具类，打印表格格式化'''
+
     def __init__(self):
         self.table = []
         header = [
@@ -30,9 +32,9 @@ class DrawTable(object):
         self.x = PrettyTable(header)
         self.x.reversesort = True
 
-    def append(self,*args,**kwargs):
+    def append(self, *args, **kwargs):
         if(kwargs):
-            content=[
+            content = [
                 kwargs['id'],
                 kwargs['name'],
                 kwargs['ping'],
@@ -46,21 +48,31 @@ class DrawTable(object):
     def str(self):
         return str(self.x)
 
-init (autoreset=False)
+
+init(autoreset=False)
+
+
 class colored(object):
     '''工具类，打印不同颜色字体'''
-    def red(self,s):
+
+    def red(self, s):
         return Fore.LIGHTRED_EX + s + Fore.RESET
-    def green(self,s):
+
+    def green(self, s):
         return Fore.LIGHTGREEN_EX + s + Fore.RESET
-    def yellow(self,s):
+
+    def yellow(self, s):
         return Fore.LIGHTYELLOW_EX + s + Fore.RESET
-    def white(self,s):
+
+    def white(self, s):
         return Fore.LIGHTWHITE_EX + s + Fore.RESET
-    def blue(self,s):
+
+    def blue(self, s):
         return Fore.LIGHTBLUE_EX + s + Fore.RESET
 
 # 对base编码进行解码
+
+
 def base64decode(text):
     i = len(text) % 4
     if i == 1:
@@ -74,16 +86,20 @@ def base64decode(text):
     return base64.urlsafe_b64decode(text).decode()
 
 # 通过订阅链接获取ssr url链接列表
+
+
 def get_ssr_list(url):
     color = colored()
     url_colored = color.blue(url)
     print('Being parsed the ssr url:', url_colored)
     print('It will take a moment,Please be patient~~')
-    result = requests.get(url, headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3742.400 QQBrowser/10.5.3864.400'})
+    result = requests.get(url, headers={
+                          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3742.400 QQBrowser/10.5.3864.400'})
     try:
         ssr_result = base64decode(result.text)
     except:
-        print(color.red("ssr subscribe url parsed failed,please check the ssr subscribe url~~"))
+        print(color.red(
+            "ssr subscribe url parsed failed,please check the ssr subscribe url~~"))
         return None
     else:
         ssr_list = ssr_result.split('\n')
@@ -94,6 +110,8 @@ def get_ssr_list(url):
         return ssr_real_list
 
 # 解析ssr url链接
+
+
 def analysis_ssr_url(ssr_url):
     try:
         ssr_init_url = 'ssr://' + ssr_url
@@ -112,7 +130,7 @@ def analysis_ssr_url(ssr_url):
             second_encryption_param_list = param_list[-1].split('/?')
             password = base64decode(second_encryption_param_list[0])
             encryption_param_list = second_encryption_param_list[-1].split('&')
-            key_list = ['obfs_param','protocol_param','remarks','group']
+            key_list = ['obfs_param', 'protocol_param', 'remarks', 'group']
             for params in encryption_param_list:
                 key = params.split('=')[0]
                 value = params.split('=')[1]
@@ -127,7 +145,8 @@ def analysis_ssr_url(ssr_url):
             ssr_dict['method'] = method
             ssr_dict['obfs'] = obfs
             ssr_dict['password'] = password
-            ssr_dict['ping'], ssr_dict['port_status'] = get_node_status(server, int(port), ssr_dict['remarks'])
+            ssr_dict['ping'], ssr_dict['port_status'] = get_node_status(
+                server, int(port), ssr_dict['remarks'])
             ssr_dict['protocol'] = protocol
             ssr_dict['ssr_url'] = ssr_init_url
             return ssr_dict
@@ -137,15 +156,19 @@ def analysis_ssr_url(ssr_url):
             return None
 
 # 生成ssr 信息列表字典
+
+
 def generate_ssr_info_dict_list(ssr_url_list):
     ssr_info_dict_list = list()
     for ssr_url in ssr_url_list:
         ssr_info_dict = analysis_ssr_url(ssr_url)
-        if ssr_info_dict: 
+        if ssr_info_dict:
             ssr_info_dict_list.append(ssr_info_dict)
     return ssr_info_dict_list
 
 # 生成打印表格
+
+
 def generate_ssr_display_table(ssr_info_dict_list):
     table = DrawTable()
     id = 1
@@ -161,7 +184,7 @@ def generate_ssr_display_table(ssr_info_dict_list):
             port_status = color.green(ssr_info_dict['port_status'])
 
         table.append(
-            id = id,
+            id=id,
             name=ssr_info_dict['remarks'],
             ping=ping,
             port_status=port_status,
@@ -173,12 +196,16 @@ def generate_ssr_display_table(ssr_info_dict_list):
     return table.str()
 
 # 获取用户家目录
+
+
 def get_home_dir():
     cmd = 'echo ${HOME}'
     home_dir = os.popen(cmd).read().strip()
     return home_dir
 
 # 获取配置目录
+
+
 def get_config_dir():
     home_dir = get_home_dir()
     config_dir = os.path.join(home_dir, '.ssr-command-client')
@@ -187,6 +214,8 @@ def get_config_dir():
     return config_dir, config_file_dir, lock_file_dir
 
 # 创建配置目录
+
+
 def create_config_dir():
     config_dir, config_file_dir, lock_file_dir = get_config_dir()
     if os.path.exists(config_dir):
@@ -200,9 +229,12 @@ def create_config_dir():
             file.write('')
 
 # 下载ssr源码
+
+
 def download_ssr_source():
     url = 'https://github.com/TyrantLucifer/shadowsocksr/archive/3.2.2.zip'
-    result = requests.get(url, headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3742.400 QQBrowser/10.5.3864.400'})
+    result = requests.get(url, headers={
+                          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3742.400 QQBrowser/10.5.3864.400'})
     config_dir, config_file_dir, lock_file_dir = get_config_dir()
     shadowsocksr_zip_file_path = os.path.join(config_dir, 'shadowsocksr.zip')
     with open(shadowsocksr_zip_file_path, "wb") as file:
@@ -213,19 +245,29 @@ def download_ssr_source():
     os.rename(zipFile.namelist()[0], 'shadowsocksr')
 
 # 初始化配置文件
+
+
 def init_config_file():
     config_dir, config_file_dir, lock_file_dir = get_config_dir()
     server_json_file_path = os.path.join(config_dir, 'ssr-list.json')
     config_json_file_path = os.path.join(config_dir, 'config.json')
-    shadowsocksr_client_path = os.path.join(config_dir, 'shadowsocksr/shadowsocks/local.py')
+    shadowsocksr_client_path = os.path.join(
+        config_dir, 'shadowsocksr/shadowsocks/local.py')
     shadowsocksr_pid_file_path = os.path.join(config_dir, 'shadowsocksr.pid')
     shadowsocksr_log_file_path = os.path.join(config_dir, 'shadowsocksr.log')
     cf = configparser.ConfigParser()
     cf.add_section('default')
-    cf.set('default', 'subscribe_url', 'https://raw.githubusercontent.com/satrom/V2SSR/master/SSR/Day.txt')
+    subscribe_url = os.getenv("subscribe_url")
+    if subscribe_url == None:
+        subscribe_url = 'https://raw.githubusercontent.com/satrom/V2SSR/master/SSR/Day.txt'
+    cf.set('default', 'subscribe_url', subscribe_url)
+
     cf.set('default', 'server_json_file_path', server_json_file_path)
     cf.set('default', 'config_json_file_path', config_json_file_path)
-    cf.set('default', 'local_address', '127.0.0.1')
+    local_address = os.getenv("local_address")
+    if local_address == None:
+        local_address = '127.0.0.1'
+    cf.set('default', 'local_address', local_address)
     cf.set('default', 'timeout', '300')
     cf.set('default', 'workers', '1')
     cf.set('default', 'shadowsocksr_client_path', shadowsocksr_client_path)
@@ -237,6 +279,8 @@ def init_config_file():
         lock_file.write('')
 
 # 获取配置项
+
+
 def get_config_value(key):
     config_dir, config_file_dir, lock_file_dir = get_config_dir()
     cf = configparser.ConfigParser()
@@ -244,6 +288,8 @@ def get_config_value(key):
     return cf.get('default', key)
 
 # 设置配置项
+
+
 def set_config_value(key, value):
     config_dir, config_file_dir, lock_file_dir = get_config_dir()
     cf = configparser.ConfigParser()
@@ -253,6 +299,8 @@ def set_config_value(key, value):
         cf.write(file)
 
 # 测试节点是否可以联通
+
+
 def get_node_status(server, port, remarks):
     color = colored()
     server_addr = (server, port)
@@ -277,13 +325,15 @@ def get_node_status(server, port, remarks):
     return str(inteval), flag
 
 # 打印节点二维码
+
+
 def print_qrcode(data):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=3,
         border=1,
-    );
+    )
     qr.add_data(data)
     qr.make(fit=True)
     img = qr.make_image()

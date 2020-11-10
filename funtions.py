@@ -2,6 +2,7 @@
 # coding=utf-8
 import json
 from utils import *
+import os
 
 config_dir, config_file_dir, lock_file_dir = get_config_dir()
 if os.path.exists(lock_file_dir):
@@ -27,7 +28,7 @@ else:
     WORKERS = int(get_config_value('WORKERS'))
     SHADOWSOCKSR_PID_FILE_PATH = get_config_value('SHADOWSOCKSR_PID_FILE_PATH')
     SHADOWSOCKSR_LOG_FILE_PATH = get_config_value('SHADOWSOCKSR_LOG_FILE_PATH')
-    
+
 def generate_config_json(id, port=1080):
     if os.path.exists(SERVER_JSON_FILE_PATH):
         with open(SERVER_JSON_FILE_PATH, 'r') as file:
@@ -36,7 +37,7 @@ def generate_config_json(id, port=1080):
     else:
         ssr_info_dict_list = update_ssr_list_info()
     ssr_info_dict = ssr_info_dict_list[id - 1]
-    ssr_info_dict['local_address'] = LOCAL_ADDRESS 
+    ssr_info_dict['local_address'] = LOCAL_ADDRESS
     ssr_info_dict['timeout'] = TIMEOUT
     ssr_info_dict['workers'] = WORKERS
     ssr_info_dict['local_port'] = port
@@ -148,7 +149,7 @@ def remove_ssr_subcribe_url(url):
         url = ",".join(url_list)
         set_config_value("SUBSCRIBE_URL", url)
         print(color.green("remove ssr subcribe url success~~"))
-        
+
 def parse_ssr_url(url):
     url = url[6:]
     try:
@@ -189,12 +190,12 @@ def add_ssr_node(url):
             with open(SERVER_JSON_FILE_PATH, 'r') as ssr_list_file:
                 json_str = ssr_list_file.read()
             ssr_info_dict_list = json.loads(json_str)
-            ssr_info_dict_list.append(ssr_info_dict)                      
+            ssr_info_dict_list.append(ssr_info_dict)
         else:
             ssr_info_dict_list = list()
             ssr_info_dict_list.append(ssr_info_dict)
 
-        json_str = json.dumps(ssr_info_dict_list, ensure_ascii=False, indent=4)           
+        json_str = json.dumps(ssr_info_dict_list, ensure_ascii=False, indent=4)
         with open(SERVER_JSON_FILE_PATH, 'w') as file:
             file.write(json_str)
 
@@ -221,7 +222,7 @@ def test_node_again(id):
         display_port_status = color.red(port_status)
     else:
         display_port_status = color.green(port_status)
-    
+
     ssr_info_dict_list[id - 1]['ping'] = ping
     ssr_info_dict_list[id - 1]['port_status'] = port_status
     print("ping(ms):", display_ping)
@@ -230,8 +231,8 @@ def test_node_again(id):
     with open(SERVER_JSON_FILE_PATH, 'w') as file:
         file.write(json_str)
     print("ssr info is update~~")
-  
-def print_ssr_qrcode(id):                                                                     
+
+def print_ssr_qrcode(id):
     if os.path.exists(SERVER_JSON_FILE_PATH):
         with open(SERVER_JSON_FILE_PATH, 'r') as file:
             json_str = file.read()

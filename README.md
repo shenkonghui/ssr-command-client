@@ -56,6 +56,10 @@ OPTIONS
 -v --version "display version" 显示当前版本
 ```
 
+### in docker
+```
+docker run --name ssr -v /tmp:/root -e subscribe_url="https://raw.githubusercontent.com/satrom/V2SSR/master/SSR/Day.txt'" -e local_address=0.0.0.0 -p 1088:1080 ssr
+```
 ## 效果展示
 
 - 设置ssr订阅链接 `python3 main.py --setting-url url`
@@ -174,7 +178,7 @@ alias ip="curl http://ip-api.com/json/?lang=zh-CN"
 
 > 4. 因为最近工作和学习原因，公众号很少更新，流失了很多粉丝，但也无可奈何，希望大家能多多理解。
 
-> 5. `fork`的大哥们能否在`fork`之前给个`star` 
+> 5. `fork`的大哥们能否在`fork`之前给个`star`
 
 ## Tips
 
